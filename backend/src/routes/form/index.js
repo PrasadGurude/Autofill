@@ -1,19 +1,13 @@
-import e, { Router } from "express";
-import { Form } from "../../model";
-import { authenticate } from "../../middleware";
+const { Form } = require("../../model/index.js");
+const { authenticate } = require("../../middleware.js");
+const { Router } = require("express");
 
 const router = Router();
 router.use(authenticate)
 
-router.get("/submit", (req, res) => {
+router.post("/submit",async (req, res) => {
   // This endpoint is for submitting a form
   const formData = req.body;
-  if (!data || Object.keys(data).length === 0) {
-    return res.status(400).json({
-      message: "No data provided",
-      status: "error",
-    });
-  }
 
   const userId = req.user.id; 
   if (!userId) {
@@ -22,10 +16,10 @@ router.get("/submit", (req, res) => {
       status: "error",
     });
   }
-  const from = Form.create(
+  const from =await Form.create(
     {
       userId: userId,
-      formData: formData,
+      formData: {...formData},
     }
   )
 
@@ -35,7 +29,7 @@ router.get("/submit", (req, res) => {
   });
 }); 
 
-router.get("/status", (req, res) => {
+router.get("/status",async (req, res) => {
   const userId = req.user.id;
   if (!userId) {
     return res.status(401).json({
@@ -44,20 +38,21 @@ router.get("/status", (req, res) => {
     });
   }
 
-  const formData = Form.findOne({ userId: userId });
-  
+  const formData =await Form.findOne({userId: userId});
+
   if (!formData) {
     return res.status(404).json({
-      message: "Form not found",
+      message: "No forms found for this user",
       status: "error",
     });
-  }  
+  }
 
   res.status(200).json({
-    message: "Form status endpoint",
-    status: "submitted",  
-    formData: formData.formData,
+    message: "Forms retrieved successfully",
+    status: "success",
+    formData: formData,
   });
+
 });
 
-export default router;
+module.exports = router;

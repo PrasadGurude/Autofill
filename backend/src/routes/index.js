@@ -1,10 +1,10 @@
-import { Router } from "express";
-import userRouter from "./user/index.js";
-import formRouter from "./form/index.js";
+const { Router } = require("express");
+const userRouter = require("./user/index.js");
+const formRouter = require("./form/index.js");
 
 const router = Router();
 
 router.use("/user",userRouter);
 router.use("/form",formRouter);
 
-export default router;
+module.exports = router;
